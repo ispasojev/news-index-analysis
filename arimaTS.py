@@ -1,57 +1,58 @@
-# Uni-variate time series analysis used to predict Hang Seng Index
-
-from statsmodels.tsa.stattools import adfuller
-from statsmodels.tsa.arima_model import ARIMA
+from statsmodels.tsa.arima.model import ARIMA
 from statsmodels.tools.eval_measures import rmse
 import matplotlib.pyplot as plt
-from sklearn.model_selection import train_test_split
 import pandas as pd
+from pmdarima.arima import auto_arima
 
 
-# https://towardsdatascience.com/time-series-analysis-tutorial-using-financial-data-4d1b846489f9
-# -> financial data
-# -> ARIMA, SARIMAX & Facebook Prophet
+def split_data(data, p_split=0.8):
+    # split data set into training and test data to use for validation of the model
+    split_size = round(len(data) * p_split)
+    data_train = data[:split_size]
+    data_test = data[split_size:]
+
+    return data_train, data_test
+
+
+def get_arima_model(data_train, data_test):
+    # apply auto arima for automatically choosing the best values for p, d, and q
+    best_arima = auto_arima(data_train, start_p=0, start_q=0, max_p=3, max_q=3, test="adf", seasonal=True)
+
+    # generate ARIMA model
+    model = ARIMA(data_train, order=best_arima.get_params().get("order"))
+    model_fit = model.fit()
+    print(model_fit.summary())
+
+    forecast = model_fit.forecast(steps=1, alpha=0.05, exog=None)
+    print("The root mean square error is: ", rmse(data_test, forecast))  # gives score to evaluate result
+
+    forecast_series = pd.Series(forecast, index=data_test.index)
+    univariate_plot(data_train, data_test, forecast_series)
+
 
 # https://www.kdnuggets.com/2020/01/stock-market-forecasting-time-series-analysis.html
-# -> financial data, ARIMA
-
-def get_ARIMA_model(data):
-    data_x = data[0]
-    data_y = data[1]
-    # split data set into training and test data to use for validation of the model
-    # for time series, cannot use cross validation; need to make sure we keep order for our splits
-    # todo: split data into x and y values
-    x_train, x_test, y_train, y_test = train_test_split(data_x, data_y)
-    model_ARIMA = ARIMA()
-    # TODO improve p, q https://analyticsindiamag.com/quick-way-to-find-p-d-and-q-values-for-arima/
-    # finding p, q, and d: https://analyticsindiamag.com/quick-way-to-find-p-d-and-q-values-for-arima/
-    model = ARIMA(x_train, order=(p, find_d_val(data), q)).fit()  # create model and fit training data
-    print(model.summary())
-    # first enr
-    forecast, stderr_fc, conf_int_fc = model.forecast()  # todo: inputs: steps=1, exog=None, alpha=0.05; should define steps?
-    print("The root mean square error is: ", rmse(x_test, forecast))  # gives score to evaluate result
-
-    plt.plot(data, forecast)
+# Uni-variate time series analysis used to predict Hang Seng Index
+def univariate_plot(data_train, data_test, data_fc):
+    plt.plot(data_train, color='green', label='training')
+    plt.plot(data_test, color='blue', label='Actual Stock Price')
+    plt.plot(data_fc, color='orange', label='Predicted Stock Price')
+    plt.title('Comparison Forecast and current data')
+    plt.xlabel('time')
+    plt.ylabel('Hang Seng index')
+    plt.legend()
+    plt.show()
 
 
-# d is number of required differencing to make the data stationary
-def find_d_val(data):
-    d = 0
-    diff_data = data.copy()  # TODO check that data is copied without pointer
-    while not is_stationary(diff_data):
-        diff_data = diff_data.diff()
-        d += 1
-    return d
+path = 'data/index_data.csv'
+hs_data = pd.read_csv(path, header=0, sep=";")
+hs_data['Datetime'] = pd.to_datetime(hs_data['Datetime'])
 
+hs_index_data = []
+for x in hs_data['Index Value']:
+    hs_index_data.append(float(x.replace(',', '')))
 
-# https://analyticsindiamag.com/how-to-make-a-time-series-stationary/
-def is_stationary(data):
-    fuller_result = adfuller(data)
-    p_val = fuller_result[1]
-    return p_val < 0.05
+hs_data['Index Value'] = hs_index_data
+(hs_train, hs_test) = split_data(hs_data)
 
+get_arima_model(hs_train['Index Value'], hs_test['Index Value'])
 
-path = ''
-hs_data = pd.read_csv(path)
-hs_data.head()  # showing data content
-get_ARIMA_model(hs_data)

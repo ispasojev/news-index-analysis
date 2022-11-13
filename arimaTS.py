@@ -5,16 +5,15 @@ import pandas as pd
 from pmdarima.arima import auto_arima
 
 
-def split_data(data, p_split=0.8):
+def split_data(data, p_split=0.75):
     # split data set into training and test data to use for validation of the model
     split_size = round(len(data) * p_split)
     data_train = data[:split_size]
-    data_test = data[split_size:]
-
+    data_test = data[(split_size-1):]
     return data_train, data_test
 
 
-def get_arima_model(data_train, data_test):
+def get_arima_model(data_train, data_test, prediction_step):
     # apply auto arima for automatically choosing the best values for p, d, and q
     best_arima = auto_arima(data_train, start_p=0, start_q=0, max_p=3, max_q=3, test="adf", seasonal=True)
 
@@ -23,8 +22,9 @@ def get_arima_model(data_train, data_test):
     model_fit = model.fit()
     print(model_fit.summary())
 
-    forecast = model_fit.forecast(steps=1, alpha=0.05, exog=None)
-    print("The root mean square error is: ", rmse(data_test, forecast))  # gives score to evaluate result
+    forecast = model_fit.forecast(steps=data_test.size + prediction_step, alpha=0.05, exog=None)
+    print(forecast)
+    print("The root mean square error is: ", rmse(data_test, forecast[:data_test.size]))  # gives score to evaluate result
 
     forecast_series = pd.Series(forecast, index=data_test.index)
     univariate_plot(data_train, data_test, forecast_series)
@@ -43,16 +43,10 @@ def univariate_plot(data_train, data_test, data_fc):
     plt.show()
 
 
-path = 'data/index_data.csv'
+path = 'data/preprocessed_and_merged_datasets.csv'
 hs_data = pd.read_csv(path, header=0, sep=";")
-hs_data['Datetime'] = pd.to_datetime(hs_data['Datetime'])
+hs_data['datetime'] = pd.to_datetime(hs_data['datetime'])
 
-hs_index_data = []
-for x in hs_data['Index Value']:
-    hs_index_data.append(float(x.replace(',', '')))
-
-hs_data['Index Value'] = hs_index_data
 (hs_train, hs_test) = split_data(hs_data)
-
-get_arima_model(hs_train['Index Value'], hs_test['Index Value'])
+get_arima_model(hs_train['Index Value'], hs_test['Index Value'], 2)
 

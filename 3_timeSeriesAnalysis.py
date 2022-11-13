@@ -15,12 +15,12 @@ def split_data(d, split_p):
     return train_data, test_data
 
 
-def get_prophet_univariate(d, split_p):
+def get_prophet_univariate(d, split_p, periods):
     train, test = split_data(d, split_p)
     # uni-variate model
     model = Prophet()  # initiating prophet using the default parameters
     model.fit(train)
-    future_model = model.make_future_dataframe(periods=10)
+    future_model = model.make_future_dataframe(periods)
     model_forecast = model.predict(future_model)
 
     plot_prophet(model, model_forecast)
@@ -130,7 +130,7 @@ data.rename(columns={'Index Value': 'y'}, inplace=True)
 data['ds'] = pd.to_datetime(data['ds'])
 
 # Prophet model
-get_prophet_univariate(data, 0.75)
+get_prophet_univariate(data, 0.75, 16)
 
 get_prophet_multivariate(data, 0.75, ['Wind in km/h', 'ratio_negative_articles'], 16)
 

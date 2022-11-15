@@ -70,9 +70,9 @@ print(len(stopwords_list))
 
 test_dict = {
     # Number of Stop words to remove
-    "#Stopwords": [100, 2070],
+    "#Stopwords": [100],
     # Number of news articles to include
-    "#news_articles": [200, 10000, 500000],
+    "#news_articles": [500000],
     #libraries and number of cores to test out
     "Libraries": {"Joblib": [2, 4, 8], "Ray":[2, 4],}
 }

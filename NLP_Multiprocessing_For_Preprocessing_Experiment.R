@@ -82,7 +82,7 @@ for(n_texts in number_of_articles_to_try) {
     #create a plot of the results
     results_plot = ggplot(visuals_df, aes(x = Model, y= Time))+
       geom_bar(stat="identity") +
-      labs(title="Comparison of Multiprocessing Strategies in R", 
+      labs(title="Comparison of Multiprocessing Strategies", 
            subtitle = paste("Number of texts:", n_texts,
                            "Number of Stopwords: ", n_stopwords)) + 
       xlab("Multiprocessing Approach") +

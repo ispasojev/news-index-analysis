@@ -3,6 +3,7 @@
 library(csv)
 library(future.apply)
 library(ggplot2)
+library(parallel)
 
 print("Number of logical cores:")
 print(detectCores(logical = TRUE))
@@ -17,8 +18,6 @@ all_stopwords = read.delim("./Data/stopwords.txt", sep = "\n", skip = 3)
 all_stopwords = all_stopwords[,1]
 all_stopwords = as.vector(all_stopwords)
 stopwords = all_stopwords
-
-
 
 remove_stop_words = function(text) {
   # A simple function that first splits text via
@@ -76,6 +75,14 @@ for(n_texts in number_of_articles_to_try) {
                                    measure_time("future_lapply(data$text, remove_stop_words)"))
     }
     
+    
+    #parallel with nc.cores > 1 only works on non Windows machines
+    #for (n_cores in c(2,4,8)) {
+      #model_name_list = append(model_name_list, paste("Future ", n_cores, " Cores"))
+      #execution_time_list = append(execution_time_list,
+       #                            measure_time("parallel::mclapply(data$text, remove_stop_words, nc.cores=n_cores)"))
+    #}
+      
     visuals_df = data.frame(Model = model_name_list, 
                             Time = execution_time_list)
     
@@ -92,16 +99,18 @@ for(n_texts in number_of_articles_to_try) {
     
     ggsave(paste("./data/images/Multiprocessing_Experiment_R_",
              n_texts, "_articles_",
-             n_stopwords, "_stopwords.png"), 
+             n_stopwords, "_stopwords.png", sep = ""), 
            plot = results_plot)
     
   }
 
 }
 
-#library(parallel)
-#options(mc.cores = 4)
-#measure_time("parallel::mclapply(data$text, remove_stop_words, nc.cores=4)")
+
+
+
+
+
 
 
 

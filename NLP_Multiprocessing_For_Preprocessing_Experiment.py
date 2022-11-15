@@ -1,6 +1,7 @@
 import pandas as pd
 import time
 import timeit
+import numpy as np
 
 from joblib import Parallel, delayed
 import multiprocessing as mp
@@ -30,16 +31,11 @@ def remove_stop_words(text):
     whitespaces and remove then stopwords that appear in list"""
 
     # split text by whitespace
-    tokenized_text = str(text).split(" ")
-    new_text = ""
-
-    # remove stopwords
-    for token in tokenized_text:
-        # Check if the word is in NLTKs stopword list
-        if token in stopwords_list:
-            pass
-        else:
-            new_text += " " + str(token)
+    x = np.array(text.split(" "))
+    # check if word is in  stopwords
+    x =  x[np.isin(x, stopwords_list) == False]
+    # join again
+    new_text = ' '.join(x.tolist())
 
     # if text is longer than 5 characters return modified text
     # else return original text
@@ -70,9 +66,9 @@ print(len(stopwords_list))
 
 test_dict = {
     # Number of Stop words to remove
-    "#Stopwords": [100],
+    "#Stopwords": [100, 2070],
     # Number of news articles to include
-    "#news_articles": [500000],
+    "#news_articles": [200, 10000, 500000],
     #libraries and number of cores to test out
     "Libraries": {"Joblib": [2, 4, 8], "Ray":[2, 4],}
 }
@@ -82,7 +78,7 @@ for number_of_texts in test_dict["#news_articles"]:
     df = all_data.head(number_of_texts)
     for number_of_stopwords in test_dict["#Stopwords"]:
 
-        stopwords_list = original_stopwords_list[:number_of_stopwords]
+        stopwords_list = np.array(original_stopwords_list[:number_of_stopwords])
         # to store the results of the experiment
         model_name_list = []
         execution_time_list = []

@@ -134,24 +134,27 @@ def normalize_text(text):
     return text
 
 
-# custom stoplist
-customized_stopwords = ["and", "or", "either", "to",
-                        "such", "sure", "so", "also", "usually", "just",
-                        "but", "however", "additionally", "furthermore", "while", "besides",
-                        "are", "is", "be", "will", "make", "am", "has", "may", "might", "would", "can", "should",
-                        "allow", "make", "use"]
+# load stopwords
+stopwords_list = []
+with open('./Data/stopwords.txt') as f:
+    for line in f.readlines():
+        if str(line)[0] != "#":
+            stopwords_list.append(str(line).replace("\n", ""))
+stopwords_list = np.array(stopwords_list)
 
 def remove_stop_words(text):
-    tokenized_text = str(text).split(" ")
-    new_text = ""
+    """ A simple function that first splits text via
+    whitespaces and remove then stopwords that appear in list"""
 
-    for token in tokenized_text:
-        # Check if the word is in NLTKs stopword list
-        if token in customized_stopwords:
-            pass
-        else:
-            new_text += " " + str(token)
+    # split text by whitespace
+    x = np.array(text.split(" "))
+    # check if word is in  stopwords
+    x =  x[np.isin(x, stopwords_list) == False]
+    # join again
+    new_text = ' '.join(x.tolist())
 
+    # if text is longer than 5 characters return modified text
+    # else return original text
     if len(new_text) > 5:
         return new_text
     else:

@@ -112,7 +112,7 @@ def normalize_text(text):
                     pass
         else:
 
-            # filter out stopword based on part of speeach tagging
+            # filter out stopword based on part of speach tagging
             # see https://machinelearningknowledge.ai/tutorial-on-spacy-part-of-speech-pos-tagging/
             if (token.pos_ == "DET" or token.pos_ == "ADP" or
                     token.pos_ == "ADP" or token.pos_ == "CONJ" or

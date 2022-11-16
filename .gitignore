@@ -133,3 +133,5 @@ dmypy.json
 .idea/workspace.xml
 .idea/vcs.xml
 data/news_data_Experimentation.csv
+.RData
+.Rhistory

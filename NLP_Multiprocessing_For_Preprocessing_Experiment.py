@@ -33,7 +33,7 @@ def remove_stop_words(text):
     # split text by whitespace
     x = np.array(text.split(" "))
     # check if word is in  stopwords
-    x =  x[np.isin(x, stopwords_list) == False]
+    x = x[np.isin(x, stopwords_list) == False]
     # join again
     new_text = ' '.join(x.tolist())
 
@@ -111,7 +111,7 @@ for number_of_texts in test_dict["#news_articles"]:
         plt.figure(figsize=(10,8), dpi=130)
         plt.style.use("seaborn")
         plt.bar(model_name_list, execution_time_list)
-        plt.suptitle("Comparison of Multiprocessing Strategies", fontsize=18)
+        plt.suptitle("Comparison of Multiprocessing Strategies in Python", fontsize=18)
         plt.title("Number of Texts: " + str(number_of_texts) +
                   ", Number of Stopwords: " + str(number_of_stopwords), fontsize=10)
         plt.ylabel("Execution Time in Seconds")

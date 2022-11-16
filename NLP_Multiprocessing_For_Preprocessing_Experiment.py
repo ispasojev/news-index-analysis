@@ -112,7 +112,7 @@ for number_of_texts in test_dict["#news_articles"]:
         plt.title("Number of Texts: " + str(number_of_texts) +
                   ", Number of Stopwords: " + str(number_of_stopwords), fontsize=18)
         plt.ylabel("Execution Time in Seconds", size=18)
-        plt.xlabel("Multiprocessing Approach", size=14)
+        plt.xlabel("Multiprocessing Strategy", size=14)
         plt.axhline(min(execution_time_list), color="red")
         plt.xticks(rotation=20, size=18)
         plt.yticks(size=18)

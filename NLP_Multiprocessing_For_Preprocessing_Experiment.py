@@ -61,9 +61,6 @@ def measure_time(name, code_snippet,
 
 
 
-
-print(len(stopwords_list))
-
 test_dict = {
     # Number of Stop words to remove
     "#Stopwords": [100, 2070],
@@ -85,9 +82,9 @@ for number_of_texts in test_dict["#news_articles"]:
 
         # sequential methods
         # from NLP_Preprocessing_Functions import remove_stop_words
-        measure_time("Sequential List", "[remove_stop_words(x) for x in df['text'].to_list()]",
+        measure_time("Seq. List", "[remove_stop_words(x) for x in df['text'].to_list()]",
                      model_name_list, execution_time_list)
-        measure_time("Sequential lambda", "df['text'].apply(lambda x: remove_stop_words(x))",
+        measure_time("Seq. DF", "df['text'].apply(lambda x: remove_stop_words(x))",
                      model_name_list, execution_time_list)
 
         # multiprocessing methods
@@ -102,22 +99,23 @@ for number_of_texts in test_dict["#news_articles"]:
                         statement = "pool.map(remove_stop_words, df['text'].to_list())"
                     except:
                         pass
-                measure_time("Y X Cores".replace("X",
+                measure_time("Y XC".replace("X",
                             str(n_core)).replace("Y", library),
                             statement.replace("_CORES_", str(n_core)), model_name_list, execution_time_list)
 
 
         #plot the resutls
-        plt.figure(figsize=(10,8), dpi=130)
+        plt.figure(figsize=(7,8), dpi=150)
         plt.style.use("seaborn")
         plt.bar(model_name_list, execution_time_list)
-        plt.suptitle("Comparison of Multiprocessing Strategies in Python", fontsize=18)
+        plt.suptitle("Multiprocessing Strategies in Python", fontsize=22)
         plt.title("Number of Texts: " + str(number_of_texts) +
-                  ", Number of Stopwords: " + str(number_of_stopwords), fontsize=10)
-        plt.ylabel("Execution Time in Seconds")
-        plt.xlabel("Multiprocessing Approach")
+                  ", Number of Stopwords: " + str(number_of_stopwords), fontsize=18)
+        plt.ylabel("Execution Time in Seconds", size=18)
+        plt.xlabel("Multiprocessing Approach", size=14)
         plt.axhline(min(execution_time_list), color="red")
-        plt.xticks(rotation=20)
+        plt.xticks(rotation=20, size=18)
+        plt.yticks(size=18)
         plt.savefig(".\data\images\Multiprocessing_Experiment_Python_" +
                     str(number_of_texts) + "_articles_" +
                     str(number_of_stopwords) + "_stopwords.png")

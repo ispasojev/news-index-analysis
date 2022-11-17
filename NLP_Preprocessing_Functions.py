@@ -55,6 +55,9 @@ def remove_special_characters_and_parts(text):
     text = re.sub(r'\"+', ' ', text)
     text = re.sub(r'\'+', ' ', text)
 
+    # remove digits
+    text = re.sub(r'\d+', ' ', text)
+
     # remove slashes
     text = re.sub('\n', ' ', text)
     text = re.sub(r'[\\(/)]', ' ', text)
@@ -147,7 +150,7 @@ def remove_stop_words(text):
     whitespaces and remove then stopwords that appear in list"""
 
     # split text by whitespace
-    x = np.array(text.split(" "))
+    x = np.array(text.lower().split(" "))
     # check if word is in  stopwords
     x =  x[np.isin(x, stopwords_list) == False]
     # join again

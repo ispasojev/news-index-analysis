@@ -65,7 +65,7 @@ test_dict = {
     # Number of Stop words to remove
     "#Stopwords": [100, 2070],
     # Number of news articles to include
-    "#news_articles": [200, 10000, 500000],
+    "#news_articles": [200, 1000, 10000, 500000],
     #libraries and number of cores to test out
     "Libraries": {"Joblib": [2, 4, 8], "Ray":[2, 4],}
 }
@@ -109,18 +109,35 @@ for number_of_texts in test_dict["#news_articles"]:
         plt.style.use("seaborn")
         plt.bar(model_name_list, execution_time_list)
         plt.suptitle("Multiprocessing Strategies in Python", fontsize=22)
-        plt.title("Number of Texts: " + str(number_of_texts) +
-                  ", Number of Stopwords: " + str(number_of_stopwords), fontsize=18)
+        plt.title("No. Texts: " + str(number_of_texts) +
+                  ", No. Stopwords: " + str(number_of_stopwords), fontsize=18)
         plt.ylabel("Execution Time in Seconds", size=18)
         plt.xlabel("Multiprocessing Strategy", size=14)
         plt.axhline(min(execution_time_list), color="red")
         plt.xticks(rotation=20, size=18)
         plt.yticks(size=18)
-        plt.savefig(".\data\images\Multiprocessing_Experiment_Python_" +
+        plt.savefig("./data/images/Multiprocessing_Experiment_Python_" +
                     str(number_of_texts) + "_articles_" +
                     str(number_of_stopwords) + "_stopwords.png")
 
+        # store the results additionally as table
 
+        # adding information on experiments
+        execution_time_list = [number_of_texts, number_of_stopwords] + execution_time_list
+        model_name_list = ["number_of_texts", "number_of_stopwords"] + model_name_list
+
+        # check if dataframe exists
+        if "results_df" in globals():
+            new_data = pd.DataFrame(execution_time_list).transpose()
+            new_data.columns = model_name_list
+            results_df = results_df.append(new_data,
+                              ignore_index=True)
+        else:
+            # create the dataframe
+            results_df = pd.DataFrame(execution_time_list).transpose()
+            results_df.columns = model_name_list
+
+results_df.to_csv("./data/Preprocessing_Experiment_Results_Python.csv", sep=";", index=False)
 
 
 

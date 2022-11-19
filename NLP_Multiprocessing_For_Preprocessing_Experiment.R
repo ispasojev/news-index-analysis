@@ -91,8 +91,8 @@ for(n_texts in number_of_articles_to_try) {
       geom_bar(stat="identity",  fill = "light blue") +
       scale_x_discrete(labels = model_name_list) +
       labs(title="Multiprocessing Strategies in R",
-           subtitle = paste("Number of texts:", n_texts,
-                           "Number of Stopwords: ", n_stopwords)) +
+           subtitle = paste("No. of texts:", n_texts,
+                           "No. of Stopwords: ", n_stopwords)) +
       xlab("Multiprocessing Approach") +
       geom_hline(yintercept = min(execution_time_list), color ="red") +
       ylab("Execution Time in Seconds") +
@@ -105,9 +105,28 @@ for(n_texts in number_of_articles_to_try) {
              n_stopwords, "_stopwords.png", sep = ""), 
            plot = results_plot)
     
+    # store the results additionally as table 
+    
+    # adding information on experiments
+    execution_time_list = c(n_texts, n_stopwords, execution_time_list)
+    model_name_list = c("number_of_texts", "number_of_stopwords", model_name_list)
+    
+    # check if dataframe exists
+    if (exists("results_df")) {
+      new_df = t(data.frame(execution_time_list))
+      results_df = rbind(results_df, new_df)
+    
+    }else{
+      results_df = t(data.frame(execution_time_list))
+      colnames(results_df) = model_name_list
+    }
+    
   }
 
 }
+
+write.table(results_df, "./data/Preprocessing_Experiment_Results_R.csv", 
+          row.names=FALSE, quote=FALSE, sep =";")
 
 
 

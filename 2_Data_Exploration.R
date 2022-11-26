@@ -44,7 +44,7 @@ ui <- fluidPage(
       selectInput("variable", choices = names(input_data), 
                   label = "Select an explainatory variable:",
                   selected = "total_number_of_articles"),
-      actionButton("raw_data", "View raw data"),
+      #actionButton("raw_data", "View raw data"),
       br(),
       br(),
       DT::dataTableOutput("raw_data_table"), 
